@@ -59,6 +59,7 @@ export type Database = {
           created_at: string | null
           employee_id: string | null
           id: string
+          net_pay: number
           note: string | null
           payroll_id: string | null
           payroll_type: Database["public"]["Enums"]["payroll_type"]
@@ -68,6 +69,7 @@ export type Database = {
           created_at?: string | null
           employee_id?: string | null
           id?: string
+          net_pay?: number
           note?: string | null
           payroll_id?: string | null
           payroll_type: Database["public"]["Enums"]["payroll_type"]
@@ -77,6 +79,7 @@ export type Database = {
           created_at?: string | null
           employee_id?: string | null
           id?: string
+          net_pay?: number
           note?: string | null
           payroll_id?: string | null
           payroll_type?: Database["public"]["Enums"]["payroll_type"]
@@ -314,21 +317,21 @@ export type Database = {
           created_at: string
           dispatched: number
           id: string
-          order_number: string
+          order_number: string | null
         }
         Insert: {
           balance?: number
           created_at?: string
           dispatched?: number
           id?: string
-          order_number: string
+          order_number?: string | null
         }
         Update: {
           balance?: number
           created_at?: string
           dispatched?: number
           id?: string
-          order_number?: string
+          order_number?: string | null
         }
         Relationships: [
           {
@@ -345,8 +348,10 @@ export type Database = {
           added_by: string
           created_at: string | null
           date: string
+          expected_quantity: number | null
           id: string
           product: string
+          production_run_id: string | null
           quantity_produced: number
           shift: Database["public"]["Enums"]["shifts"]
           warehouse: string
@@ -356,8 +361,10 @@ export type Database = {
           added_by: string
           created_at?: string | null
           date: string
+          expected_quantity?: number | null
           id?: string
           product: string
+          production_run_id?: string | null
           quantity_produced: number
           shift: Database["public"]["Enums"]["shifts"]
           warehouse: string
@@ -367,8 +374,10 @@ export type Database = {
           added_by?: string
           created_at?: string | null
           date?: string
+          expected_quantity?: number | null
           id?: string
           product?: string
+          production_run_id?: string | null
           quantity_produced?: number
           shift?: Database["public"]["Enums"]["shifts"]
           warehouse?: string
@@ -388,6 +397,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "inventory_items"
             referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "finished_products_production_run_id_fkey"
+            columns: ["production_run_id"]
+            isOneToOne: false
+            referencedRelation: "production_runs"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "finished_products_warehouse_fkey"
@@ -597,6 +613,76 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["username"]
+          },
+        ]
+      }
+      payroll_bonuses: {
+        Row: {
+          amount: number
+          bonus_type: Database["public"]["Enums"]["bonus_type"]
+          created_at: string | null
+          employee_payroll_id: string
+          id: string
+          note: string | null
+        }
+        Insert: {
+          amount: number
+          bonus_type: Database["public"]["Enums"]["bonus_type"]
+          created_at?: string | null
+          employee_payroll_id: string
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          amount?: number
+          bonus_type?: Database["public"]["Enums"]["bonus_type"]
+          created_at?: string | null
+          employee_payroll_id?: string
+          id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_bonuses_employee_payroll_id_fkey"
+            columns: ["employee_payroll_id"]
+            isOneToOne: false
+            referencedRelation: "employee_payroll"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payroll_deductions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          deduction_type: Database["public"]["Enums"]["deduction_type"]
+          employee_payroll_id: string
+          id: string
+          note: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          deduction_type: Database["public"]["Enums"]["deduction_type"]
+          employee_payroll_id: string
+          id?: string
+          note?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          deduction_type?: Database["public"]["Enums"]["deduction_type"]
+          employee_payroll_id?: string
+          id?: string
+          note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_deductions_employee_payroll_id_fkey"
+            columns: ["employee_payroll_id"]
+            isOneToOne: false
+            referencedRelation: "employee_payroll"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1310,31 +1396,37 @@ export type Database = {
       }
       stock_in: {
         Row: {
+          amount: number | null
           created_at: string
           date: string
           description: string | null
           id: string
           item: string
+          price: number
           quantity: number
           stocked_by: string
           warehouse: string
         }
         Insert: {
+          amount?: number | null
           created_at?: string
           date: string
           description?: string | null
           id?: string
           item: string
+          price?: number
           quantity: number
           stocked_by: string
           warehouse: string
         }
         Update: {
+          amount?: number | null
           created_at?: string
           date?: string
           description?: string | null
           id?: string
           item?: string
+          price?: number
           quantity?: number
           stocked_by?: string
           warehouse?: string
@@ -1356,6 +1448,117 @@ export type Database = {
           },
           {
             foreignKeyName: "stock_in_warehouse_fkey"
+            columns: ["warehouse"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      stock_monthly_summary: {
+        Row: {
+          closing_balance: number
+          closing_balance_value: number | null
+          cost_of_goods_used: number | null
+          cumulative_weighted_avg_cost: number | null
+          item: string
+          month: number
+          opening_balance: number
+          total_purchase_cost: number
+          total_purchased_quantity: number
+          total_used_quantity: number
+          year: number
+        }
+        Insert: {
+          closing_balance?: number
+          closing_balance_value?: number | null
+          cost_of_goods_used?: number | null
+          cumulative_weighted_avg_cost?: number | null
+          item: string
+          month: number
+          opening_balance?: number
+          total_purchase_cost?: number
+          total_purchased_quantity?: number
+          total_used_quantity?: number
+          year: number
+        }
+        Update: {
+          closing_balance?: number
+          closing_balance_value?: number | null
+          cost_of_goods_used?: number | null
+          cumulative_weighted_avg_cost?: number | null
+          item?: string
+          month?: number
+          opening_balance?: number
+          total_purchase_cost?: number
+          total_purchased_quantity?: number
+          total_used_quantity?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_monthly_summary_item_fkey"
+            columns: ["item"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      stock_out: {
+        Row: {
+          amount: number | null
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          issued_by: string
+          item: string
+          price: number
+          quantity: number
+          warehouse: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          date: string
+          description?: string | null
+          id?: string
+          issued_by: string
+          item: string
+          price?: number
+          quantity: number
+          warehouse: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          issued_by?: string
+          item?: string
+          price?: number
+          quantity?: number
+          warehouse?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_out_issued_by_fkey"
+            columns: ["issued_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["username"]
+          },
+          {
+            foreignKeyName: "stock_out_item_fkey"
+            columns: ["item"]
+            isOneToOne: false
+            referencedRelation: "inventory_items"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "stock_out_warehouse_fkey"
             columns: ["warehouse"]
             isOneToOne: false
             referencedRelation: "warehouses"
@@ -1405,7 +1608,8 @@ export type Database = {
           created_at: string
           dispatched: number | null
           id: string
-          item: string
+          issued: number
+          item: string | null
           order_number: string | null
           produced: number
           production_balance: number
@@ -1420,7 +1624,8 @@ export type Database = {
           created_at?: string
           dispatched?: number | null
           id?: string
-          item: string
+          issued?: number
+          item?: string | null
           order_number?: string | null
           produced?: number
           production_balance?: number
@@ -1435,7 +1640,8 @@ export type Database = {
           created_at?: string
           dispatched?: number | null
           id?: string
-          item?: string
+          issued?: number
+          item?: string | null
           order_number?: string | null
           produced?: number
           production_balance?: number
@@ -1806,7 +2012,7 @@ export type Database = {
           code: string
           created_at: string
           id: string
-          location: Database["public"]["Enums"]["state_type"]
+          location: Database["public"]["Enums"]["state_type"] | null
           name: string
           stock_receiver_phone: string
         }
@@ -1815,7 +2021,7 @@ export type Database = {
           code: string
           created_at?: string
           id?: string
-          location: Database["public"]["Enums"]["state_type"]
+          location?: Database["public"]["Enums"]["state_type"] | null
           name: string
           stock_receiver_phone: string
         }
@@ -1824,7 +2030,7 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
-          location?: Database["public"]["Enums"]["state_type"]
+          location?: Database["public"]["Enums"]["state_type"] | null
           name?: string
           stock_receiver_phone?: string
         }
@@ -1832,7 +2038,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      monthly_ledger: {
+        Row: {
+          month: number | null
+          profit: number | null
+          total_cost_of_used: number | null
+          total_expenses: number | null
+          total_payroll: number | null
+          total_revenue: number | null
+          transport_fees: number | null
+          year: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_finished_products: {
@@ -1865,6 +2083,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      calculate_item_cwac_history: {
+        Args: { target_item: string }
+        Returns: undefined
+      }
+      calculate_net_pay: {
+        Args: { emp_payroll_id: string; gross_pay?: number }
+        Returns: number
+      }
       create_dispatch: {
         Args: {
           v_date_dispatched: string
@@ -1890,40 +2116,26 @@ export type Database = {
         Returns: string
       }
       create_inventory_item_collection: {
-        Args: {
-          item_data: Json
-        }
+        Args: { item_data: Json }
         Returns: undefined
       }
       create_production: {
-        Args: {
-          production_data: Json
-        }
+        Args: { production_data: Json }
         Returns: undefined
       }
       create_purchase: {
-        Args: {
-          seller: string
-          date?: string
-          paid?: number
-          items?: Json[]
-        }
+        Args: { seller: string; date?: string; paid?: number; items?: Json[] }
         Returns: {
-          purchase_data: unknown
+          purchase_data: Database["public"]["Tables"]["stock_purchases"]["Row"]
           items_data: Database["public"]["Tables"]["purchase_items"]["Row"][]
         }[]
       }
       create_purchase_order: {
-        Args: {
-          order_data: Json
-          items_data: Json
-        }
+        Args: { order_data: Json; items_data: Json }
         Returns: undefined
       }
       create_request: {
-        Args: {
-          request_data: Json
-        }
+        Args: { request_data: Json }
         Returns: undefined
       }
       create_sale: {
@@ -1937,7 +2149,7 @@ export type Database = {
           items?: Json[]
         }
         Returns: {
-          sale_data: unknown
+          sale_data: Database["public"]["Tables"]["sales"]["Row"]
           items_data: Database["public"]["Tables"]["sales_items"]["Row"][]
         }[]
       }
@@ -1954,14 +2166,29 @@ export type Database = {
         }[]
       }
       get_daily_production_summary: {
-        Args: {
-          p_date?: string
-          p_warehouse?: string
-        }
+        Args: { p_date?: string; p_warehouse?: string }
         Returns: {
           product_info: Json
           shift: string
           total_quantity_produced: number
+        }[]
+      }
+      get_item_production_receipt_summary: {
+        Args: {
+          specific_date?: string
+          start_date?: string
+          end_date?: string
+          item_filter?: string
+          warehouse_filter?: string
+          result_limit?: number
+          result_offset?: number
+        }
+        Returns: {
+          date: string
+          item: string
+          total_quantity: number
+          aggregated_at: string
+          item_data: Database["public"]["Tables"]["inventory_items"]["Row"]
         }[]
       }
       get_total_purchases_payment_balance: {
@@ -1993,6 +2220,8 @@ export type Database = {
     }
     Enums: {
       account_type: "outbound" | "inbound"
+      bonus_type: "performance" | "referral" | "holiday" | "signing" | "other"
+      deduction_type: "tax" | "insurance" | "loan" | "other"
       dispatch_type: "normal" | "sale"
       employment_status: "active" | "not_active"
       expense_categories:
@@ -2010,9 +2239,9 @@ export type Database = {
         | "Training and Development"
         | "Entertainment"
         | "Miscellaneous"
-        | "Transportation"
-        | "Medical"
         | "Government Agencies"
+        | "Medical"
+        | "Transportation"
       inventory_item_type: "raw" | "product"
       payment_mode: "cash" | "transfer" | "pos"
       payroll_status: "paid" | "pending"
@@ -2080,27 +2309,29 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -2108,20 +2339,22 @@ export type Tables<
     : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -2129,20 +2362,22 @@ export type TablesInsert<
     : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -2150,21 +2385,23 @@ export type TablesUpdate<
     : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
-  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
@@ -2173,6 +2410,99 @@ export type CompositeTypes<
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
   ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      account_type: ["outbound", "inbound"],
+      bonus_type: ["performance", "referral", "holiday", "signing", "other"],
+      deduction_type: ["tax", "insurance", "loan", "other"],
+      dispatch_type: ["normal", "sale"],
+      employment_status: ["active", "not_active"],
+      expense_categories: [
+        "Payroll",
+        "Office Supplies",
+        "Utilities",
+        "Rent",
+        "Travel",
+        "Marketing",
+        "Legal and Professional Services",
+        "Insurance",
+        "Technology",
+        "Maintenance and Repairs",
+        "Employee Benefits",
+        "Training and Development",
+        "Entertainment",
+        "Miscellaneous",
+        "Government Agencies",
+        "Medical",
+        "Transportation",
+      ],
+      inventory_item_type: ["raw", "product"],
+      payment_mode: ["cash", "transfer", "pos"],
+      payroll_status: ["paid", "pending"],
+      payroll_type: ["salary", "allowance"],
+      product_submission_status: ["pending", "accepted", "rejected"],
+      request_status: ["accepted", "pending", "rejected"],
+      sales_type: ["internal", "external"],
+      shifts: ["morning", "night"],
+      state_type: [
+        "abia",
+        "adamawa",
+        "akwa ibom",
+        "anambra",
+        "bauchi",
+        "bayelsa",
+        "benue",
+        "borno",
+        "cross river",
+        "delta",
+        "ebonyi",
+        "edo",
+        "ekiti",
+        "enugu",
+        "gombe",
+        "imo",
+        "jigawa",
+        "kaduna",
+        "kano",
+        "katsina",
+        "kebbi",
+        "kogi",
+        "kwara",
+        "lagos",
+        "nasarawa",
+        "niger",
+        "ogun",
+        "ondo",
+        "osun",
+        "oyo",
+        "plateau",
+        "rivers",
+        "sokoto",
+        "taraba",
+        "yobe",
+        "zamfara",
+        "abuja",
+      ],
+      stock_type: ["internal", "external"],
+      transaction_type: ["credit", "debit"],
+      user_enrollment_status: ["pending", "enrolled"],
+      user_role: [
+        "SUPER ADMIN",
+        "DEFAULT",
+        "ADMIN",
+        "INVENTORY",
+        "PRODUCTION",
+        "MANAGER",
+        "ACCOUNTING",
+        "LOGISTICS",
+      ],
+      vehicle_dispatch_type: ["purchase", "sale", "transfer"],
+      vehicle_status: ["dispatched", "delivered", "received"],
+    },
+  },
+} as const

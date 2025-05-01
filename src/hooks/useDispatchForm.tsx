@@ -42,7 +42,7 @@ function useDispatchForm(): HookReturn {
   const { userProfile } = useAuthStore();
 
   const { data: destinations } = useQuery({
-    queryKey: warehousesKeys.getDispatchWarehouses,
+    queryKey: warehousesKeys.getDispatchWarehousesWithId,
     queryFn: async (): Promise<SelectOption[]> => {
       const warehouses = await getWarehouses();
       return warehouses.map((warehouse) => ({

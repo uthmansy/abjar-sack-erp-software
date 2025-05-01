@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { ApiFilterOptions, FinancialReport } from "../types/api";
+import { ApiFilterOptions } from "../types/api";
 import {
   DailyProductionSummary,
   Departments,
@@ -8,6 +8,7 @@ import {
   Enrollment,
   Expenses,
   ExternalStocksAndPurchases,
+  FinancialReportLedger,
   FinishedProductsJoint,
   InsertDepartments,
   InsertEmployees,
@@ -1915,18 +1916,16 @@ export const addProductSubmissions = async (
 };
 
 export const getMonthlyFinancialReprots = async (): Promise<
-  FinancialReport[]
+  FinancialReportLedger[]
 > => {
-  const { data, error } = await supabase.rpc(
-    "generate_monthly_financial_report"
-  );
+  const { data, error } = await supabase.from("monthly_ledger").select("*");
 
   if (error) {
     console.error(error);
     throw new Error("Error fetching financial report");
   }
 
-  return data as FinancialReport[]; // Type assertion to FinancialReport array
+  return data; // Type assertion to FinancialReport array
 };
 
 export const updateInventoryItem = async (

@@ -1,14 +1,14 @@
 import { Button, Table } from "antd";
-import { FinancialReport } from "../../../types/api";
 import { financialReportsColumns } from "../../../tableColumns/financialReports";
 import { CSVLink } from "react-csv";
 import { BorderInnerOutlined } from "@ant-design/icons";
 import { Headers } from "react-csv/lib/core";
+import { FinancialReportLedger } from "../../../types/db";
 
 interface Props {
   isLoading: boolean;
   isRefetching: boolean;
-  reports: FinancialReport[];
+  reports: FinancialReportLedger[];
   csvHeaders: Headers;
 }
 

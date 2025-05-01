@@ -3,6 +3,7 @@ export const warehousesKeys = {
   getAllWarehousesPaginated: "getAllWarehousesPaginated",
   getWarehousesNames: "getWarehousesNames",
   getDispatchWarehouses: "getDispatchWarehouses",
+  getDispatchWarehousesWithId: "getDispatchWarehousesWithId",
   getWarehouseOptions: "getWarehouseOptions",
 };
 export const departmentsKeys = {

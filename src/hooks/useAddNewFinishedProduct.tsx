@@ -122,7 +122,6 @@ function useAddNewFinishedProduct(form: FormInstance): HookReturn {
         if (!isAdmin) {
           values.warehouse = userProfile?.warehouse;
         }
-
         await finishedProductsMultipleSchema.parseAsync(values);
         await addFinishedProducts(values);
       } catch (error) {

@@ -30,6 +30,8 @@ export type UpdateExpenses = Database["public"]["Tables"]["expenses"]["Update"];
 export type Employees = Database["public"]["Tables"]["employees"]["Row"];
 export type Payrolls = Database["public"]["Tables"]["payrolls"]["Row"];
 export type UpdatePayrolls = Database["public"]["Tables"]["payrolls"]["Update"];
+export type FinancialReportLedger =
+  Database["public"]["Views"]["monthly_ledger"]["Row"];
 export type EmployeePayroll =
   Database["public"]["Tables"]["employee_payroll"]["Row"];
 export type UpdateEmployeePayroll =
