@@ -5,6 +5,7 @@ import RejectRequest from "./RejectRequest";
 import DeleteRequest from "./DeleteRequest";
 import useAuthStore from "../../../store/auth";
 import MarkUsed from "./MarkUsed";
+import EditRequest from "./EditRequest";
 
 interface Props {
   request: RequestWithItems;
@@ -27,6 +28,7 @@ function RequestsTableActions({ request }: Props) {
             userProfile?.role === "PRODUCTION") && (
             <>
               <DeleteRequest request={request} />
+              <EditRequest request={request} />
             </>
           )}
         </>
@@ -39,6 +41,13 @@ function RequestsTableActions({ request }: Props) {
           <MarkUsed request={request} />
         </>
       )}
+      {(userProfile?.role === "SUPER ADMIN" ||
+        userProfile?.role === "INVENTORY") &&
+        request.used && (
+          <>
+            <EditRequest request={request} />
+          </>
+        )}
     </Space>
   );
 }

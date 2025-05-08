@@ -326,6 +326,7 @@ function useDispatchForm(): HookReturn {
         if (originType === "internal")
           values.v_origin_warehouse = userProfile?.warehouse;
         const payload = await DispatchSchema.parseAsync(values);
+        console.log(payload);
         const vehicle = await createDispatch(payload);
         setNewDispatchVehicle(vehicle);
         nextPage();

@@ -12,3 +12,13 @@ export const RequestSchema = z.object({
     })
   ),
 });
+export const UpdateRequestSchema = z.object({
+  id: z.string().uuid(),
+  date_used: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional()
+    .nullable(), // Ensures date format is YYYY-MM-DD
+});
+
+export type UpdateRequestType = z.infer<typeof UpdateRequestSchema>;

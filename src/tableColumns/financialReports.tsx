@@ -52,7 +52,7 @@ export const financialReportsColumns: ColumnsType<FinancialReportLedger> = [
     render: (_, record) => `₦${formatNumber(record.transport_fees || 0)}`,
   },
   {
-    title: "Profit",
+    title: "Profit/Loss",
     dataIndex: "profit",
     key: "profit",
     render: (_, record) =>

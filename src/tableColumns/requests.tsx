@@ -12,9 +12,15 @@ export const requestsAdminColumns: ColumnsType<RequestWithItems> = [
     width: 40,
   },
   {
-    title: "Date",
+    title: "Date Requested",
     dataIndex: "date_requested",
     key: "date_requested",
+    render: (text) => <span className="capitalize">{text}</span>,
+  },
+  {
+    title: "Date Used",
+    dataIndex: "date_used",
+    key: "date_used",
     render: (text) => <span className="capitalize">{text}</span>,
   },
   {

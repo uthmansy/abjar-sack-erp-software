@@ -80,6 +80,7 @@ import { CreateDeduction, Deduction } from "../zodSchemas/payrollDeductions";
 import { getDateRange } from "./functions";
 import { UpdateFinishedProductsType } from "../zodSchemas/finishedProducts";
 import { ItemInflowType } from "../hooks/useItemRequestInflow";
+import { UpdateRequestType } from "../zodSchemas/requests";
 
 export const getAllWarehouses = async (
   pageNumber: number = 1
@@ -1506,6 +1507,16 @@ export const updatePurchase = async (
 export const updateSale = async (payload: UpdateSaleInput): Promise<void> => {
   const { error } = await supabase
     .from("sales")
+    .update(payload)
+    .eq("id", payload.id);
+  if (error) console.error(error);
+  if (error) throw new Error(error.message);
+};
+export const updateRequest = async (
+  payload: UpdateRequestType
+): Promise<void> => {
+  const { error } = await supabase
+    .from("requests")
     .update(payload)
     .eq("id", payload.id);
   if (error) console.error(error);
