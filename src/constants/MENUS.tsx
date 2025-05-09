@@ -284,6 +284,7 @@ export const inventoryMenuItems: SidebarMenuItem[] = [
   stockIn,
   inventoryItems,
   internalDispatch,
+  externalDispatch,
   transit,
   scanWaybill,
   receivedTrucks,
