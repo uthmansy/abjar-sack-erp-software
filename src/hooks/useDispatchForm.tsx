@@ -89,6 +89,9 @@ function useDispatchForm(): HookReturn {
 
   const [filteredOrders, setFilteredOrders] = useState<SalesAndPayments[]>([]);
   const [salesItems, setSalesItems] = useState<SalesItemsJoined[]>([]);
+  const [transferItems, setTransferItems] = useState<
+    InventoryTransferWithStocks[]
+  >(transferOrders || []);
 
   useEffect(() => {
     const filteredOrders =
@@ -108,7 +111,7 @@ function useDispatchForm(): HookReturn {
   }, [saleOrders]);
 
   const formConfig: FieldConfig[] = [
-    ...((dispatchType === "purchase"
+    ...((dispatchType === "purchase" || dispatchType === "transfer"
       ? [
           {
             name: "v_destination",
@@ -116,6 +119,12 @@ function useDispatchForm(): HookReturn {
             type: "select",
             options: destinations || [],
             required: true,
+            onSelect: (value: string) =>
+              setTransferItems(
+                transferOrders?.filter(
+                  (order) => order.destinationStock.warehouse_info.id === value
+                ) || []
+              ),
           },
         ]
       : []) as FieldConfig[]),
@@ -231,14 +240,14 @@ function useDispatchForm(): HookReturn {
                 type: "select",
                 required: true,
                 options:
-                  transferOrders
+                  transferItems
                     ?.filter(
                       (transfer) =>
                         transfer.originStock.warehouse ===
                         userProfile?.warehouse
                     )
                     ?.map((transfer) => ({
-                      label: `to ${transfer.destinationStock.warehouse}`,
+                      label: `${transfer.item} To ${transfer.destinationStock.warehouse} - ${transfer.balance} remains`,
                       value: transfer.id,
                     })) || [],
               },
@@ -316,7 +325,11 @@ function useDispatchForm(): HookReturn {
               : dispatchType === "transfer"
               ? transferOrders?.find((t) => t.id === i.transfer_id)?.item
               : undefined,
-          destination: values.v_destination,
+          destination:
+            dispatchType === "transfer"
+              ? transferOrders?.find((t) => t.id === i.transfer_id)
+                  ?.destinationStock.warehouse_info.id
+              : values.v_destination,
           dispatch_type: dispatchType,
         }));
         values.v_date_dispatched =

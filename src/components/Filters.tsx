@@ -128,7 +128,7 @@ export default function Filters({
     expenseCategoryOptions;
 
   return (
-    <div className="mb-5 flex space-x-3">
+    <div className="mb-5 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
       {onReset && (
         <Button className="uppercase" onClick={onReset}>
           Reset All Filters

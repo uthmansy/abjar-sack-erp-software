@@ -65,6 +65,7 @@ function App() {
           colorPrimary: "#ABC32F",
           colorInfo: "#fa8c16",
           borderRadius: 0,
+          fontFamily: "Plus Jakarta Sans",
         },
         components: {
           Layout: {

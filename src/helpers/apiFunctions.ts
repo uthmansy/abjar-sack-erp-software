@@ -236,6 +236,16 @@ export const getSalesPayments = async (
 
   return data;
 };
+export const getSalesPaymentsCsv = async (): Promise<SalesPaymentsJoined[]> => {
+  let query = supabase.from("sales_payments").select("*, sale:order_number(*)");
+
+  query = query.order("created_at", { ascending: false });
+
+  const { data, error } = await query;
+  if (error) throw error.message;
+  return data;
+};
+
 export const getPurchasePayments = async (
   pageNumber: number = 1
 ): Promise<PurchasePaymentsJoined[]> => {
@@ -631,7 +641,7 @@ export const getVehicles = async (
     dateFilter,
     debouncedSearchTerm,
     monthFilter,
-    // warehouseFilter,
+    warehouseFilter,
     yearFilter,
     itemFilter,
   }: Omit<ApiFilterOptions, "pageParam"> & {
@@ -663,6 +673,16 @@ export const getVehicles = async (
   // Apply item filter if it's not 'all'
   if (itemFilter) {
     query = query.eq("items.item", itemFilter);
+  }
+
+  if (warehouseFilter) {
+    let { data: warehouse, error: warehouseError } = await supabase
+      .from("warehouses")
+      .select("id")
+      .eq("name", warehouseFilter)
+      .single();
+    if (warehouseError) throw warehouseError.message;
+    query = query.eq("destination", warehouse?.id);
   }
 
   // Apply destination filter using inner join if it's not 'all'
@@ -893,7 +913,7 @@ export const getInventoryTransfers = async (
   const { data, error } = await supabase
     .from("inventory_transfers")
     .select(
-      "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*), createdBy:created_by (*)"
+      "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*, warehouse_info:warehouse(*)), createdBy:created_by (*)"
     )
     .range((pageNumber - 1) * 50, pageNumber * 50 - 1)
     .order("created_at", { ascending: false });
@@ -909,7 +929,7 @@ export const getAllInventoryTransfers = async (): Promise<
   const { data, error } = await supabase
     .from("inventory_transfers")
     .select(
-      "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*), createdBy:created_by (*)"
+      "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*, warehouse_info:warehouse(*)), createdBy:created_by (*)"
     )
     .order("created_at", { ascending: false });
 
@@ -924,7 +944,7 @@ export const getUncompletedInventoryTransfers = async (): Promise<
   const { data, error } = await supabase
     .from("inventory_transfers")
     .select(
-      "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*), createdBy:created_by (*)"
+      "*, originStock:origin_stock_id (*), destinationStock:destination_stock_id (*, warehouse_info:warehouse(*)), createdBy:created_by (*)"
     )
     .gt("balance", 0)
     .order("created_at", { ascending: false });

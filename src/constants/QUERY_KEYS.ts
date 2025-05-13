@@ -73,6 +73,7 @@ export const purchasePaymentsKeys = {
 };
 export const salesPaymentsKeys = {
   getAll: "getAllsalesPayments",
+  getCsv: "getAllsalesPaymentsCsv",
 };
 export const salesKeys = {
   getAllSales: "getAllSales",

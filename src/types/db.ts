@@ -134,9 +134,12 @@ export interface ProductSubmissionWithDetails extends ProductSubmission {
 export interface StocksJoined extends Stocks {
   item_info: InventoryItems;
 }
+export interface StocksWithWarehouse extends Stocks {
+  warehouse_info: Warehouses;
+}
 export interface InventoryTransferWithStocks extends InventoryTransfer {
   originStock: Stocks;
-  destinationStock: Stocks;
+  destinationStock: StocksWithWarehouse;
   createdBy: UserProfile;
 }
 export interface FinishedProductsJoint extends FinishedProducts {

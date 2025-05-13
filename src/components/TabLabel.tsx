@@ -7,8 +7,8 @@ interface Props {
 
 function TabLabel({ Icon, label }: Props) {
   return (
-    <div className="font-bold uppercase flex space-x-2 items-center">
-      <Icon className="text-inherit opacity-70 text-xs" />
+    <div className="font-semibold uppercase flex space-x-2 items-center">
+      <Icon className="text-inherit opacity-50 text-xs scale-90" />
       <span>{label}</span>
     </div>
   );
